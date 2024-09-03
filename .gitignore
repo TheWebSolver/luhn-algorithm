@@ -4,3 +4,5 @@
 !composer.json
 !phpunit.xml
 !phpstan.neon
+!phpcs.xml
+!.editorconfig
