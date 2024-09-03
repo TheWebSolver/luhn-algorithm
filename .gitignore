@@ -1,5 +1,6 @@
 /*
 !Src
+!Tests
 !composer.json
 !phpunit.xml
 !phpstan.neon
