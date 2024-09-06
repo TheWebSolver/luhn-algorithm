@@ -1,6 +1,6 @@
 <?php
 /**
- * Luhn Algoritm test.
+ * Luhn Algorithm test.
  *
  * @package TheWebSolver\Codegarage\Test
  */
