@@ -116,8 +116,8 @@ trait Luhn {
 
 		if ( self::REPRESENTS_EMPTY === $value ) {
 			throw new LogicException( 'Value not provided for the Luhn Algorithm to create checksum.' );
-
 		};
+
 		$this->runAlgorithm( $value );
 
 		return $this;
