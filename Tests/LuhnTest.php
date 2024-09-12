@@ -25,7 +25,10 @@ class LuhnTest extends TestCase {
 	}
 
 	public function testAsInvocable(): void {
-		$this->assertTrue( ( new LuhnAlgorithm() )( data: 79927398713 ) );
+		$luhn = new LuhnAlgorithm();
+
+		$this->assertTrue( $luhn( data: 79927398713 ) );
+		$this->assertSame( expected: 70, actual: $luhn->checksum() );
 	}
 
 	public function testAsStaticValidate(): void {

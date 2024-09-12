@@ -1,7 +1,17 @@
 {
   "name": "thewebsolver/luhn-algorithm",
-  "description": "PHP library to validate Luhn Algorithm",
+  "description": "PHP library to validate digits such as Credit Card Number, IMEI number, etc. with Luhn Algorithm",
   "type": "library",
+  "keywords": [
+    "luhn",
+    "luhn-algorithm",
+    "validator",
+    "validation",
+    "payment-card",
+    "credit-card",
+    "IMEI",
+    "bank-card"
+  ],
   "license": "GPL-3.0-or-later",
   "autoload": {
     "psr-4": {
@@ -16,5 +26,11 @@
   ],
   "minimum-stability": "dev",
   "prefer-stable": true,
-  "require": {}
+  "require": {
+    "php": ">=8.2.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9.6",
+    "phpstan/phpstan": "^1.11"
+  }
 }

@@ -6,3 +6,5 @@
 !phpstan.neon
 !phpcs.xml
 !.editorconfig
+!LICENSE
+!README.md
