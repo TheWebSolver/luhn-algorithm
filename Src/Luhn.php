@@ -30,7 +30,7 @@ trait Luhn {
 	}
 
 	public function __toString(): string {
-		$isValid = $this->doValidate( $this->checksum() );
+		$isValid = $this->isValid();
 
 		return ( $isValid ? '' : 'in' ) . "valid [#{$this->digits}] checksum:{$this->checksum}";
 	}
@@ -43,7 +43,7 @@ trait Luhn {
 	/** @return array{isValid:bool,digits:int,checksum:int,state:array<int,array{doubled:bool,result:int}>} */
 	public function __debugInfo(): array {
 		return array(
-			'isValid'  => $this->doValidate( $this->checksum() ),
+			'isValid'  => $this->isValid(),
 			'digits'   => (int) $this->digits,
 			'checksum' => $this->checksum,
 			'state'    => array_reverse( $this->state ?? array() ),
@@ -60,7 +60,7 @@ trait Luhn {
 	}
 
 	public function isValid(): bool {
-		return $this->doValidate();
+		return $this->checksum() && ( 0 === $this->checksum % 10 );
 	}
 
 	public static function normalize( string $value ): string {
@@ -94,10 +94,6 @@ trait Luhn {
 		$this->state[ $step ] = compact( 'doubled', 'result' );
 	}
 
-	private function doValidate( ?int $checksum = null ): bool {
-		return ( $total = $checksum ?? $this->checksum() ) && ( 0 === $total % 10 );
-	}
-
 	private function numbers( mixed $value ): static {
 		if ( ! isset( $this->raw ) ) {
 			return self::EMPTY !== $value
@@ -105,7 +101,6 @@ trait Luhn {
 				: throw new LogicException( 'Value not provided for the Luhn Algorithm to create checksum.' );
 		}
 
-		// Algorithm already ran from constructor. Responding with calculated digits.
 		return ( self::EMPTY === $value || $this->raw === $value )
 			? $this
 			: throw new LogicException( 'Initialized Luhn Algorithm value does not match with the invoked value.' );
