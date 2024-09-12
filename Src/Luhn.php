@@ -29,38 +29,42 @@ trait Luhn {
 		}
 	}
 
+	/** @throws LogicException When initialized without value. */
 	public function __toString(): string {
-		$isValid = $this->isValid();
-
-		return ( $isValid ? '' : 'in' ) . "valid [#{$this->digits}] checksum:{$this->checksum}";
+		return ( $this->isValid() ? '' : 'in' ) . "valid [#{$this->digits}] checksum:{$this->checksum}";
 	}
 
-	/** @throws LogicException When value mismatch, or neither passed to constructor nor here. */
+	/** @throws LogicException When initialized without value or constructor value & invoked value mismatch. */
 	public function __invoke( mixed $data = null ): bool {
-		return $this->numbers( $data ?? self::EMPTY )->isValid();
+		return $this->ensureNumber( $data ?? self::EMPTY )->isValid();
 	}
 
-	/** @return array{isValid:bool,digits:int,checksum:int,state:array<int,array{doubled:bool,result:int}>} */
+	/**
+	 * @return array{isValid:bool,digits:int,checksum:int,state:array<int,array{doubled:bool,result:int}>}
+	 * @throws LogicException When initialized without value.
+	 */
 	public function __debugInfo(): array {
 		return array(
 			'isValid'  => $this->isValid(),
 			'digits'   => (int) $this->digits,
-			'checksum' => $this->checksum,
+			'checksum' => $this->checksum(),
 			'state'    => array_reverse( $this->state ?? array() ),
 		);
 	}
 
+	/** @throws LogicException When initialized with empty value. */
 	public static function validate( mixed $value ): bool {
 		return ( new self( $value ) )();
 	}
 
-	/** @return int Value sum total. `0` if value can't be casted to string. */
+	/** @throws LogicException When initialized without value. */
 	public function checksum(): int {
-		return $this->checksum ??= ( $this->digits ? $this->numbers( $this->raw ?? self::EMPTY )->add() : 0 );
+		return $this->checksum ??= $this->ensureNumber( $this->raw ?? self::EMPTY )->add();
 	}
 
+	/** @throws LogicException When initialized without value. */
 	public function isValid(): bool {
-		return $this->checksum() && ( 0 === $this->checksum % 10 );
+		return 0 === $this->checksum() % 10;
 	}
 
 	public static function normalize( string $value ): string {
@@ -72,11 +76,11 @@ trait Luhn {
 
 		return ! is_scalar( $value ) || ! ( $v = self::normalize( (string) $value ) ) || 2 > ( $l = strlen( $v ) )
 			? $this
-			: $this->digitsFrom( value: $v, length: $l - 1 );
+			: $this->computeDigitsFrom( value: $v, length: $l - 1 );
 	}
 
-	private function digitsFrom( string $value, int $length, string $final = '' ): static {
-		// Start doubling every next digit from the end of the given value.
+	private function computeDigitsFrom( string $value, int $length, string $final = '' ): static {
+		// Start doubling every second digit from the end of the given value.
 		for ( $i = $length; $i >= 0; --$i ) {
 			$this->runAlgorithmFor( $value, step: $i, carry: $final );
 		}
@@ -87,23 +91,10 @@ trait Luhn {
 	}
 
 	private function runAlgorithmFor( string $value, int $step, string &$carry ): void {
-		$current = $value[ $step ];
-		$doubled = $this->needsDoubling;
-		$carry  .= $result = $this->maybeDoubleAndAddDigits( value: (int) $current );
-
+		$current              = $value[ $step ];
+		$doubled              = $this->needsDoubling;
+		$carry               .= $result = $this->maybeDoubleAndAddDigits( value: (int) $current );
 		$this->state[ $step ] = compact( 'doubled', 'result' );
-	}
-
-	private function numbers( mixed $value ): static {
-		if ( ! isset( $this->raw ) ) {
-			return self::EMPTY !== $value
-				? $this->runAlgorithm( $value )
-				: throw new LogicException( 'Value not provided for the Luhn Algorithm to create checksum.' );
-		}
-
-		return ( self::EMPTY === $value || $this->raw === $value )
-			? $this
-			: throw new LogicException( 'Initialized Luhn Algorithm value does not match with the invoked value.' );
 	}
 
 	private function add(): int {
@@ -115,5 +106,19 @@ trait Luhn {
 		$this->needsDoubling = ! $double;
 
 		return ! $double ? $value : ( ( $doubled = $value * 2 ) > 9 ? ( $doubled % 10 ) + 1 : $doubled );
+	}
+
+	private function ensureNumber( mixed $value ): static {
+		if ( ! isset( $this->raw ) ) {
+			return self::EMPTY !== $value ? $this->runAlgorithm( $value ) : $this->throw( hasValue: false );
+		}
+
+		return ( self::EMPTY === $value || $this->raw === $value ) ? $this : $this->throw( hasValue: true );
+	}
+
+	private function throw( bool $hasValue ): never {
+		$valueError = $hasValue ? 'Initialized value does not match with invoked value' : 'Value not provided';
+
+		throw new LogicException( $valueError . ' for Luhn validation.' );
 	}
 }

@@ -35,14 +35,18 @@ class LuhnTest extends TestCase {
 		$this->assertTrue( LuhnAlgorithm::validate( value: 79927398713 ) );
 	}
 
-	public function testEmptyData(): void {
+	public function testExceptionThrownWhenLuhnInitializedWithoutValue(): void {
 		$luhn = new LuhnAlgorithm();
-		$info = $luhn->__debugInfo();
 
-		$this->assertFalse( $luhn->isValid() );
-		$this->assertSame( expected: 0, actual: $luhn->checksum() );
-		$this->assertSame( expected: 0, actual: $info['digits'] );
-		$this->assertEmpty( $info['state'] );
+		$this->expectExceptionMessage( 'Value not provided for Luhn validation.' );
+		$luhn->isValid();
+	}
+
+	public function testExceptionThrownWhenLuhnInvokedWithoutValue(): void {
+		$luhn = new LuhnAlgorithm();
+
+		$this->expectExceptionMessage( 'Value not provided for Luhn validation.' );
+		$luhn();
 	}
 
 	public function testUsingInstanceAndInvocable(): void {
@@ -50,8 +54,9 @@ class LuhnTest extends TestCase {
 		$this->assertTrue( ( new LuhnAlgorithm() )( 79927398713 ) );
 		$this->assertTrue( ( new LuhnAlgorithm( 79927398713 ) )( 79927398713 ) );
 
-		// Value passed to constructor and __invoke method must be same.
-		$this->expectException( LogicException::class );
+		$this->expectExceptionMessage(
+			'Initialized value does not match with invoked value for Luhn validation.'
+		);
 		$this->assertTrue( ( new LuhnAlgorithm( 79927398713 ) )( 79927398714 ) );
 	}
 
