@@ -1,22 +1,16 @@
 <?php
-/**
- * Luhn Algorithm creator.
- *
- * @package TheWebSolver\Codegarage\Validation
- */
+declare( strict_types = 1 );
 
- declare( strict_types = 1 );
-
- namespace TheWebSolver\Codegarage;
+namespace TheWebSolver\Codegarage;
 
 use LogicException;
 
 trait Luhn {
 	private const ALLOWED_PATTERN = '/[^0-9]/';
-	private const EMPTY           = 'REPRESENTS EMPTY CHECKSUM VALUE @' . self::class;
+	private const EMPTY_VALUE     = 'REPRESENTS EMPTY CHECKSUM VALUE @Luhn';
 
 	private bool $needsDoubling = false;
-	private string $digits = '0';
+	private string $digits      = '0';
 	private int $checksum;
 	private mixed $raw;
 
@@ -36,7 +30,7 @@ trait Luhn {
 
 	/** @throws LogicException When initialized without value or constructor value & invoked value mismatch. */
 	public function __invoke( mixed $data = null ): bool {
-		return $this->ensureNumber( $data ?? self::EMPTY )->isValid();
+		return $this->ensureNumber( $data ?? self::EMPTY_VALUE )->isValid();
 	}
 
 	/**
@@ -59,7 +53,7 @@ trait Luhn {
 
 	/** @throws LogicException When initialized without value. */
 	public function checksum(): int {
-		return $this->checksum ??= $this->ensureNumber( $this->raw ?? self::EMPTY )->add();
+		return $this->checksum ??= $this->ensureNumber( $this->raw ?? self::EMPTY_VALUE )->add();
 	}
 
 	/** @throws LogicException When initialized without value. */
@@ -110,10 +104,10 @@ trait Luhn {
 
 	private function ensureNumber( mixed $value ): static {
 		if ( ! isset( $this->raw ) ) {
-			return self::EMPTY !== $value ? $this->runAlgorithm( $value ) : $this->throw( hasValue: false );
+			return self::EMPTY_VALUE !== $value ? $this->runAlgorithm( $value ) : $this->throw( hasValue: false );
 		}
 
-		return ( self::EMPTY === $value || $this->raw === $value ) ? $this : $this->throw( hasValue: true );
+		return ( self::EMPTY_VALUE === $value || $this->raw === $value ) ? $this : $this->throw( hasValue: true );
 	}
 
 	private function throw( bool $hasValue ): never {

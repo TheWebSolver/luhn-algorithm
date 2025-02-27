@@ -1,10 +1,4 @@
 <?php
-/**
- * Luhn Algorithm test.
- *
- * @package TheWebSolver\Codegarage\Test
- */
-
 declare( strict_types = 1 );
 
 use PHPUnit\Framework\TestCase;
