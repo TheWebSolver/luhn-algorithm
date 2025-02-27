@@ -21,7 +21,12 @@
   ],
   "autoload": {
     "psr-4": {
-      "TheWebSolver\\Codegarage\\": "Src/"
+      "TheWebSolver\\Codegarage\\Validator\\": "Src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "thewebsolver\\Codegarage\\Test\\": "Tests/"
     }
   },
   "require": {

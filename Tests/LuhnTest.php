@@ -1,8 +1,10 @@
 <?php
 declare( strict_types = 1 );
 
+namespace TheWebSolver\Codegarage\Test;
+
 use PHPUnit\Framework\TestCase;
-use TheWebSolver\Codegarage\LuhnAlgorithm;
+use TheWebSolver\Codegarage\Validator\LuhnAlgorithm;
 
 class LuhnTest extends TestCase {
 	public function testLuhnAlgorithm(): void {

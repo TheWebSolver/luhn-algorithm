@@ -19,7 +19,7 @@ composer require thewebsolver/luhn-algorithm
 Validation can be performed using any of the three OPTIONS presented below:
 
 ```php
-use TheWebSolver\Codegarage\LuhnAlgorithm;
+use TheWebSolver\Codegarage\Validator\LuhnAlgorithm;
 
 // OPTION 1: Value passing via constructor.
 $luhn     = new LuhnAlgorithm(79927398713);
