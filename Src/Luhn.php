@@ -38,12 +38,12 @@ trait Luhn {
 	 * @throws LogicException When initialized without value.
 	 */
 	public function __debugInfo(): array {
-		return array(
+		return [
 			'isValid'  => $this->isValid(),
 			'digits'   => (int) $this->digits,
 			'checksum' => $this->checksum(),
-			'state'    => array_reverse( $this->state ?? array() ),
-		);
+			'state'    => array_reverse( $this->state ?? [] ),
+		];
 	}
 
 	/** @throws LogicException When initialized with empty value. */
